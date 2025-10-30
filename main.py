@@ -152,7 +152,7 @@ def main_loop():
             time.sleep(100)
     else:
         schedule.every().day.at(schedule_time).do(send_message) # type: ignore
-        while threadtg.is_alive():
+        while True:
             schedule.run_pending()
             time.sleep(1)
 
