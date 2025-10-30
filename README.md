@@ -4,6 +4,8 @@ A Python-based Telegram year progress bot, refactored from [RedL0tus/YearProgres
 
 *The prime of life never returns, one morning is hard to come again. Seize the day and encourage yourself, time and tide wait for no man. — Tao Yuanming*
 
+[中文文档](README_zh.md)
+
 ## Features
 
 - 📊 Display current year progress percentage
