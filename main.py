@@ -1,10 +1,15 @@
 import os
 import telebot
+import telebot.types as types
 from dotenv import load_dotenv
 import datetime
 import pytz
 import time
 import logging
+import schedule
+import threading
+import sys
+import re
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -16,6 +21,12 @@ if token is None:
 
 bot = telebot.TeleBot(token)
 
+commands = [
+    types.BotCommand("/status", "Show the current year progress"),
+    types.BotCommand("/test", "Test send message"),
+]
+bot.set_my_commands(commands)
+
 def is_leap_year(year: int) -> bool:
     if year % 4 != 0:
         return False
@@ -26,7 +37,7 @@ def is_leap_year(year: int) -> bool:
     else:
         return True
 
-def get_year_progress() -> float:
+def get_year_progress() -> tuple[str, float]:
     tz = os.getenv("TZ")
     if tz is None:
         current_date = datetime.datetime.now()
@@ -35,34 +46,81 @@ def get_year_progress() -> float:
         current_date = datetime.datetime.fromtimestamp(unix_time, tz=pytz.timezone(tz))
     year = current_date.year
     day_of_year = current_date.timetuple().tm_yday
+    seconds_today = current_date.hour * 3600 + current_date.minute * 60 + current_date.second
     if is_leap_year(year):
-        days_in_year = 366
+        total_seconds = 366 * 24 * 3600
     else:
-        days_in_year = 365
-    progress = (day_of_year / days_in_year) * 100
-    return progress
-
-def generate_progress_bar(percentage, length=20):
-    filled = int(length * percentage / 100)
-    blank = length - filled
-    bar = "▓" * filled + "░" * blank
-    return f"{bar} {int(percentage)}%"
+        total_seconds = 365 * 24 * 3600
+    progress = (day_of_year - 1) * 24 * 3600 + seconds_today
+    progress_percentage = (progress / total_seconds) * 100
+    return current_date.strftime("%Y-%m-%d %H:%M:%S"), progress_percentage
 
 def send_message(msg: str):
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
     if chat_id is None:
-        raise ValueError("TELEGRAM_CHAT_ID is not set")
+        logging.warning("TELEGRAM_CHAT_ID is not set, messages will not be sent")
+        return
     chat_id_list = chat_id.split(",")
     for id in chat_id_list:
         bot.send_message(id, msg)
 
-@bot.message_handler(commands=["get"])
-def progress(message):
-    progress = get_year_progress()
-    progress_bar = generate_progress_bar(progress)
-    bot.send_message(message.chat.id, f"{progress_bar}")
+def generate_progress_bar(percentage, length=os.getenv("PROGRESS_BAR_LENGTH")):
+    try:
+        if length is None:
+            length = 20
+        else:
+            length = int(length)
+    except ValueError:
+        logging.warning(f"Invalid progress bar length: {length}, default to 20")
+        length = 20
+    filled = int(length * percentage / 100)
+    blank = length - filled
+    bar = "▓" * filled + "░" * blank
+    send_message(f"{bar} - {percentage:.2f}%")
 
-if __name__ == "__main__":
+@bot.message_handler(commands=["status"])
+def progress(message):
+    date, progress_percentage = get_year_progress()
+    schedule_time = os.getenv("SCHEDULE_TIME")
+    if schedule_time is None or not re.match(r"^\d{2}:\d{2}$", schedule_time):
+        logging.warning(f"Invalid schedule time: {schedule_time}, default to 00:00")
+        schedule_time = "00:00"
+    finall_msg = (
+        f"Current time: {date}\n"
+        f"Year progress: {progress_percentage}%\n" # 不要保留小数
+        f"Next send Year progress at: {schedule_time}"
+    )
+    bot.send_message(message.chat.id, f"{finall_msg}")
+
+@bot.message_handler(commands=["test"])
+def test(message):
+    _ , progress_percentage = get_year_progress()
+    generate_progress_bar(progress_percentage)
+    bot.send_message(message.chat.id, f"Test message sent.")
+
+def main_loop():
+    schedule_time = os.getenv("SCHEDULE_TIME")
+    if schedule_time is None or not re.match(r"^\d{2}:\d{2}$", schedule_time):
+        logging.warning(f"Invalid schedule time: {schedule_time}, default to 00:00")
+        schedule_time = "00:00"
+    schedule.every().day.at(schedule_time).do(generate_progress_bar)
+    while threadtg.is_alive():
+        schedule.run_pending()
+        time.sleep(1)
+
+def main():
     logging.info("YearProgressBot is running")
     bot.infinity_polling()
+
+if __name__ == "__main__":
+    threadtg = threading.Thread(target=main, daemon=True)
+    threadtg.start()
+    threadsc = threading.Thread(target=main_loop, daemon=True)
+    threadsc.start()
+    try:
+        while threadsc.is_alive():
+            time.sleep(1)
+    except KeyboardInterrupt:
+        logging.info("YearProgressBot is stopped")
+        sys.exit(0)
 
