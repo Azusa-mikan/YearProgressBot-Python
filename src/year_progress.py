@@ -2,10 +2,13 @@ import datetime
 import time
 import pytz
 import pickle
-from .config import tz, progress_bar_length, chat_id
-from .log import logger
+from .config import tz, progress_bar_length
 
-year_progress_cache = ""
+try:
+    with open("year_progress.cache", "rb") as f:
+        year_progress_cache = pickle.load(f)
+except FileNotFoundError:
+    year_progress_cache = ""
 
 def is_leap_year(year: int) -> bool:
     """
@@ -61,15 +64,17 @@ async def check_year_progress():
     """
     global year_progress_cache
     _, progress_percentage = await get_year_progress()
-    _, final_msg_int = await generate_progress_bar(progress_percentage)
+    _, final_msg_str = await generate_progress_bar(progress_percentage)
 
     async def check_diff() -> str:
         """把当前进度缓存到本地文件，并发送到 Telegram"""
+        from .telegram import send_message
         with open("year_progress.cache", "wb") as f:
-            pickle.dump(final_msg_int, f)
-        return final_msg_int
+            pickle.dump(final_msg_str, f)
+        await send_message(final_msg_str)
+        return final_msg_str
     
-    if year_progress_cache != final_msg_int:
+    if year_progress_cache != final_msg_str:
         year_progress_cache = await check_diff()
     else:
         return
