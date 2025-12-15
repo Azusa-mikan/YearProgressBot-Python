@@ -67,11 +67,6 @@ async def check_year_progress():
         """把当前进度缓存到本地文件，并发送到 Telegram"""
         with open("year_progress.cache", "wb") as f:
             pickle.dump(final_msg_int, f)
-        if chat_id is None:
-            return final_msg_int
-        chat_id_list = chat_id.split(",")
-        for id in chat_id_list:
-            bot.send_message(id, f"{final_msg_int}")
         return final_msg_int
     
     if year_progress_cache != final_msg_int:
