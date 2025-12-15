@@ -5,13 +5,13 @@ from .log import logger
 from .config import token, schedule_time, admin_id, chat_id
 from .year_progress import get_year_progress, generate_progress_bar
 
-bot = AsyncTeleBot(token)
+bot = AsyncTeleBot(token)  # type: ignore
 commands = [
     types.BotCommand("/status", "Show the current year progress"),
     types.BotCommand("/test", "Test send message"),
 ]
 
-bot.set_my_commands(commands)
+asyncio.run(bot.set_my_commands(commands))
 
 async def send_message(msg: str) -> bool:
     """向配置的 chat_id（可以是多个）发送当前年份进度条"""

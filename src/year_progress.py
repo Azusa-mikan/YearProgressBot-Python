@@ -29,11 +29,11 @@ async def get_year_progress() -> tuple[str, float]:
     获取当前年份的进度
     返回：(当前日期时间字符串，当前年份进度百分比)
     """
-    if tz is None:
+    if not tz:
         current_date = datetime.datetime.now()
     else:
         unix_time = time.time()
-        current_date = datetime.datetime.fromtimestamp(unix_time, tz=pytz.timezone(tz))
+        current_date = datetime.datetime.fromtimestamp(unix_time, tz=tz)
     year = current_date.year
     day_of_year = current_date.timetuple().tm_yday
     seconds_today = current_date.hour * 3600 + current_date.minute * 60 + current_date.second

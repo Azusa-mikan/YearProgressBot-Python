@@ -1,4 +1,5 @@
 pytelegrambotapi>=4.29.1
 python-dotenv>=1.2.1
 pytz>=2025.2
-schedule>=1.2.2
+aiohttp>=3.13.2
+apscheduler>=3.11.1
