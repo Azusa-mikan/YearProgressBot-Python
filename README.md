@@ -17,7 +17,7 @@ A Python-based Telegram year progress bot, rewritten from [RedL0tus/YearProgress
 
 ## Installation
 
-The project requires Python 3.12 or higher.
+The project requires Python 3.11 or higher.
 
 Install dependencies with `pip`:
 
@@ -25,7 +25,7 @@ Install dependencies with `pip`:
 pip install -r requirements.txt
 ```
 
-Or, using a tool that understands `pyproject.toml` (for example `uv`):
+Or, using `uv` to install dependencies:
 
 ```bash
 uv sync
@@ -57,7 +57,7 @@ Notes:
 In the project root, run:
 
 ```bash
-python main.py
+python -m ypb
 ```
 
 After startup, the bot will:
@@ -90,9 +90,10 @@ When a valid `SCHEDULE_TIME` (for example `09:00`) is set, the bot will:
 
 When `SCHEDULE_TIME` is not set or is invalid, the bot switches to auto-detection mode:
 
-- It checks the current year progress at a fixed interval (default every 100 seconds)
+- It checks the current year progress at a fixed interval (default every 5 seconds)
 - A message is only sent when the textual progress bar differs from the last one
 - This effectively avoids sending duplicate messages in a short period
+- Well, I haven't tested it; please report any issues.
 
 ## Technical Details
 
@@ -111,7 +112,10 @@ When `SCHEDULE_TIME` is not set or is invalid, the bot switches to auto-detectio
 
 ## License
 
-This project is based on the original [WTFNMFPLv1](https://github.com/RedL0tus/YearProgressBot/blob/master/LICENSE) license.
+This project is a Python rewrite of [RedL0tus/YearProgressBot](https://github.com/RedL0tus/YearProgressBot),
+which is licensed under [WTFNMFPLv1](https://github.com/RedL0tus/YearProgressBot/blob/master/LICENSE).
+
+The code in this repository is licensed under the GNU General Public License v3.0 (GPL-3.0).
 
 ## Contributing
 

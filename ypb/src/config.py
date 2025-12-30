@@ -2,9 +2,12 @@ import os
 import re
 import pytz
 from dotenv import load_dotenv
-from .log import logger
+from pathlib import Path
+from ypb.src.log import logger
 
-load_dotenv()
+env_path = Path(__file__).parents[2] / ".env"
+
+load_dotenv(env_path)
 
 token = os.getenv("TELEGRAM_TOKEN")
 if not token:

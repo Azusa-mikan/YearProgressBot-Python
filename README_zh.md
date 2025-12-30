@@ -15,7 +15,7 @@
 
 ## 安装依赖
 
-项目需要 Python 3.12 及以上版本。
+项目需要 Python 3.11 及以上版本。
 
 使用 `pip` 安装依赖：
 
@@ -23,7 +23,7 @@
 pip install -r requirements.txt
 ```
 
-或使用支持 `pyproject.toml` 的工具（如 `uv` 等）安装：
+或使用 `uv` 安装依赖：
 
 ```bash
 uv sync
@@ -55,7 +55,7 @@ PROGRESS_BAR_LENGTH=进度条长度（可选，默认 20）
 在项目根目录执行：
 
 ```bash
-python main.py
+python -m ypb
 ```
 
 启动后机器人会：
@@ -88,9 +88,10 @@ python main.py
 
 当未设置 `SCHEDULE_TIME`，或配置值不合法时，机器人会进入自动检测模式：
 
-- 每隔固定时间检查一次当前年份进度（默认每 100 秒）
+- 每隔固定时间检查一次当前年份进度（默认每 5 秒）
 - 仅当进度条文本相较上次发生变化时才发送消息
 - 有效避免在短时间内重复推送相同内容
+- 嗯，我没测试过，如果出现问题请反馈。
 
 ## 技术实现
 
@@ -109,7 +110,10 @@ python main.py
 
 ## 许可证
 
-本项目基于原版 [WTFNMFPLv1](https://github.com/RedL0tus/YearProgressBot/blob/master/LICENSE) 许可证。
+本项目是对 [RedL0tus/YearProgressBot](https://github.com/RedL0tus/YearProgressBot) 的 Python 重写，
+原项目使用 [WTFNMFPLv1](https://github.com/RedL0tus/YearProgressBot/blob/master/LICENSE) 许可证。
+
+本仓库中的代码在 GNU 通用公共许可证第 3 版（GPL-3.0）下发布。
 
 ## 贡献
 
