@@ -8,8 +8,7 @@ tg_bot = TelegramBot()
 async def send_year_progress() -> None:
     bar, progress = await yp.progress_bar()
     progress_percent = round(progress, 2)
-    progress_int = int(progress)
-    if progress_int == 0:
+    if progress_percent == 0.0:
         final_msg = f"{bar} - {progress_percent}%\nHappy New Year!"
     else:
         final_msg = f"{bar} - {progress_percent}%"
@@ -17,8 +16,9 @@ async def send_year_progress() -> None:
 
 async def check_year_progress() -> None:
     bar, progress = await yp.progress_bar()
+    progress_percent = round(progress, 2)
     progress_int = int(progress)
-    if progress_int == 0:
+    if progress_percent == 0.0:
         final_msg = f"{bar} - {progress_int}%\nHappy New Year!"
     else:
         final_msg = f"{bar} - {progress_int}%"
